@@ -27,19 +27,18 @@ matchesRouter.get("/", async (req, res) => {
       .limit(limit);
     res.json({ data });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 matchesRouter.post("/", async (req, res) => {
   const parsed = createMatchSchema.safeParse(req.body);
 
-  const {
-    data: { startTime, endTime, homeScore, awayScore },
-  } = parsed;
   if (!parsed.success) {
     return res.status(400).json({ errors: parsed.error.errors });
   }
+
+  const { startTime, endTime, homeScore, awayScore } = parsed.data;
 
   try {
     const [event] = await db

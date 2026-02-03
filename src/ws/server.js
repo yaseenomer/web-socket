@@ -24,10 +24,6 @@ export function attachWebSocketServer(server) {
       socket.isAlive = true;
     });
 
-    socket.on("message", (data) => {
-      handleMessage(socket, data);
-    });
-
     socket.on("error", () => {
       socket.terminate();
     });

@@ -3,8 +3,11 @@ import arcjet, { detectBot, shield, slidingWindow } from "@arcjet/node";
 const arcjetKey = process.env.ARCJET_KEY;
 const arcjetMode = process.env.ARCJET_MODE === "DRY_RUN" ? "DRY_RUN" : "LIVE";
 
-if (!arcjetKey)
-  throw new Error("ARCJET_KEY is not defined in environment variables");
+if (!arcjetKey) {
+  console.warn(
+    "ARCJET_KEY is not defined in environment variables — Arcjet disabled (running in degraded mode)",
+  );
+}
 
 export const httpArcjet = arcjetKey
   ? arcjet({
@@ -43,10 +46,10 @@ export function securityMiddleware() {
     }
 
     try {
-      const desision = await httpArcjet.protect(req);
+      const decision = await httpArcjet.protect(req);
 
-      if (desision.isDenied()) {
-        if (desision.reason.isRateLimit()) {
+      if (decision.isDenied()) {
+        if (decision.reason.isRateLimit()) {
           return res.status(429).json({ error: "Too many requests" });
         }
         return res.status(403).json({ error: "Forbidden" });
